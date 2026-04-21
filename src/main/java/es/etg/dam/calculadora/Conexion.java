@@ -17,18 +17,20 @@ public class Conexion {
     
     private Socket cliente;
 
-    public String leer() throws IOException {
+    public void escribir(String msg) throws Exception {
+        DataOutputStream dos = new DataOutputStream(cliente.getOutputStream());
 
-        InputStream aux = cliente.getInputStream();
-        DataInputStream input = new DataInputStream(aux);
-        String msg = input.readUTF();
-        return msg;
 
+        dos.writeUTF(UtilSeguridad.prepararPaquete(msg));
     }
 
-    public void escribir(String msg) throws IOException {
-       DataOutputStream dos = new DataOutputStream(cliente.getOutputStream()); 
-       dos.writeUTF(msg);
+    public String leer() throws Exception {
+        DataInputStream dis = new DataInputStream(cliente.getInputStream());
+        String paqueteBruto = dis.readUTF();
+        
+        System.out.println("DEBUG - Paquete recibido (cifrado + hash): " + paqueteBruto);
+        //return UtilSeguridad.desempaquetar(dis.readUTF());
+        return UtilSeguridad.desempaquetar(paqueteBruto);
     }
-
 }
+
